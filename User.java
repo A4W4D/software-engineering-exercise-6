@@ -1,27 +1,51 @@
-package uploaded;
+import java.util.ArrayList;
+import java.util.List;
 
-public class WebsiteMonitorApp {
-    public static void main(String[] args) {
-        User user = new User(1, "Max Mustermann", "max@test.de");
-        Website website = new Website("https://www.frankfurt-university.de", "<html><body>Version 1</body></html>");
+public class User implements Observer {
+    private final int userId;
+    private final String name;
+    private final String email;
+    private final List<WebsiteSubscription> subscriptions;
 
-        website.registerObserver(user);
+    public User(int userId, String name, String email) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.subscriptions = new ArrayList<>();
+    }
 
-        System.out.println("--- Starte Website-Überwachung mit Strategy Pattern (Exercise 6) ---");
+    @Override
+    public void update(String url) {
+        CommunicationChannel channel = findChannelFor(url);
+        Notification notification = new Notification(
+                "Website content changed: " + url
+        );
+        notification.send(channel);
+    }
 
-        System.out.println("\n[Test 1] Nutze HTML-Content-Vergleich:");
-        website.setComparisonStrategy(new HtmlContentComparisonStrategy());
-        website.checkForUpdate("<html><body>Version 2</body></html>");
+    public void register() {
+        System.out.println(
+                "User registered: " + name + " (" + email + ")"
+        );
+    }
 
-        System.out.println("\n[Test 2] Wechsel auf Größen-Vergleich (Content Size):");
-        website.setComparisonStrategy(new SizeComparisonStrategy());
-        website.checkForUpdate("<html><body>Version X</body></html>");
+    public void addSubscription(WebsiteSubscription subscription) {
+        if (subscription != null && !subscriptions.contains(subscription)) {
+            subscriptions.add(subscription);
+        }
+    }
 
-        System.out.println("\n[Test 3] Wechsel auf reinen Text-Vergleich (ohne HTML-Tags):");
-        website.setComparisonStrategy(new TextContentComparisonStrategy());
-        website.checkForUpdate("<div>Version X</div>");
+    private CommunicationChannel findChannelFor(String url) {
+        for (WebsiteSubscription subscription : subscriptions) {
+            if (subscription.isActive()
+                    && subscription.getWebsite().getUrl().equals(url)) {
+                return subscription.getPreference().getChannel();
+            }
+        }
+        return CommunicationChannel.EMAIL;
+    }
 
-        System.out.println("\n[Test 4] Text ändert sich tatsächlich im Text-Vergleich:");
-        website.checkForUpdate("<div>Version 3 (Neuer Text!)</div>");
+    public int getUserId() {
+        return userId;
     }
 }

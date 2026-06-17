@@ -1,18 +1,17 @@
-package uploaded;
-
 import java.util.Date;
 
 public class Notification {
-    private String message;
-    private Date createdAt;
+    private final String message;
+    private final Date createdAt;
 
     public Notification(String message) {
         this.message = message;
         this.createdAt = new Date();
     }
-    public void createMessage() {
-    }
+
     public void send(CommunicationChannel channel) {
-        System.out.println("[" + createdAt + "] Gesendet via " + channel + ": " + message);
+        System.out.println(
+                "[" + createdAt + "] Sent via " + channel + ": " + message
+        );
     }
 }

@@ -1,13 +1,21 @@
 public class TextContentComparisonStrategy implements WebsiteComparisonStrategy {
+
     @Override
     public boolean areIdentical(String oldContent, String newContent) {
         if (oldContent == null || newContent == null) {
-            return false;
+            return oldContent == newContent;
         }
 
-        String oldText = oldContent.replaceAll("<[^>]*>", "").replaceAll("\\s+", " ").trim();
-        String newText = newContent.replaceAll("<[^>]*>", "").replaceAll("\\s+", " ").trim();
+        String oldText = extractText(oldContent);
+        String newText = extractText(newContent);
 
         return oldText.equals(newText);
+    }
+
+    private String extractText(String htmlContent) {
+        return htmlContent
+                .replaceAll("<[^>]*>", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }
