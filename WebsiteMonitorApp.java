@@ -1,17 +1,17 @@
-das public class WebsiteMonitorApp {
+public class WebsiteMonitorApp {
 
     public static void main(String[] args) {
+        String url = args.length > 0 ? args[0] : "https://www.frankfurt-university.de";
+
         User user = new User(
                 1,
-                "Max Mustermann",
+                "Max",
                 "max@test.de"
         );
-
         Website website = new Website(
-                "https://www.frankfurt-university.de",
+                url,
                 "<html><body>Version 1</body></html>"
         );
-
         NotificationPreference preference =
                 new NotificationPreference(
                         "immediately",
